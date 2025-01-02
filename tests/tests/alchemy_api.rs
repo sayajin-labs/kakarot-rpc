@@ -19,6 +19,11 @@ use kakarot_rpc::{
 use rstest::*;
 use serde_json::Value;
 
+/// Tests the Alchemy API endpoint for retrieving token balances.
+/// This test:
+/// 1. Sets up a test environment with an ERC20 contract
+/// 2. Mints tokens to a test address
+/// 3. Verifies the token balance through the Alchemy API
 #[rstest]
 #[awt]
 #[tokio::test(flavor = "multi_thread")]
@@ -78,6 +83,11 @@ async fn test_token_balances(#[future] erc20: (Katana, KakarotEvmContract), _set
     drop(server_handle);
 }
 
+/// Tests the Alchemy API endpoint for retrieving token metadata.
+/// This test:
+/// 1. Sets up a test environment with an ERC20 contract
+/// 2. Retrieves the token metadata through the Alchemy API
+/// 3. Verifies the token name, symbol, and decimals
 #[rstest]
 #[awt]
 #[tokio::test(flavor = "multi_thread")]
@@ -127,6 +137,11 @@ async fn test_token_metadata(#[future] erc20: (Katana, KakarotEvmContract), _set
     drop(server_handle);
 }
 
+/// Tests the Alchemy API endpoint for retrieving token allowances.
+/// This test:
+/// 1. Sets up a test environment with an ERC20 contract
+/// 2. Approves a spender address for a specific amount
+/// 3. Verifies the allowance through the Alchemy API
 #[rstest]
 #[awt]
 #[tokio::test(flavor = "multi_thread")]
