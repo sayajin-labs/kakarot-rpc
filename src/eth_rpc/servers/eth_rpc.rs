@@ -184,7 +184,7 @@ where
         Err(EthApiError::Unsupported("eth_createAccessList").into())
     }
 
-    #[tracing::instrument(skip(self), ret, err)]
+    #[tracing::instrument(skip(self), fields(request = ?request), err)]
     async fn estimate_gas(&self, request: TransactionRequest, block_id: Option<BlockId>) -> RpcResult<U256> {
         let gas = self.eth_client.eth_provider().estimate_gas(request, block_id).await?;
         Ok(U256::try_from(gas).map_err(|_| EthApiError::Custom("Gas estimation overflow".into()))?)
