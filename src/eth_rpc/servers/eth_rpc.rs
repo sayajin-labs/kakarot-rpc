@@ -184,23 +184,23 @@ where
         Err(EthApiError::Unsupported("eth_createAccessList").into())
     }
 
-    #[tracing::instrument(skip(self, request), err)]
+    #[tracing::instrument(skip(self), ret, err)]
     async fn estimate_gas(&self, request: TransactionRequest, block_id: Option<BlockId>) -> RpcResult<U256> {
-        Ok(U256::from(self.eth_client.eth_provider().estimate_gas(request, block_id).await?))
+        let gas = self.eth_client.eth_provider().estimate_gas(request, block_id).await?;
+        Ok(U256::try_from(gas).map_err(|_| EthApiError::Custom("Gas estimation overflow".into()))?)
     }
 
     #[tracing::instrument(skip_all, ret, err)]
-    async fn gas_price(&self) -> RpcResult<U256> {
-        Ok(self.eth_client.eth_provider().gas_price().await?)
-    }
-
-    #[tracing::instrument(skip(self), ret, err)]
     async fn fee_history(
         &self,
         block_count: U64,
         newest_block: BlockNumberOrTag,
         reward_percentiles: Option<Vec<f64>>,
     ) -> RpcResult<FeeHistory> {
+        const MAX_BLOCK_COUNT: u64 = 1024; // Reasonable limit to prevent resource exhaustion
+        if block_count.as_u64() > MAX_BLOCK_COUNT {
+            return Err(EthApiError::Custom(format!("block_count exceeds maximum allowed value of {MAX_BLOCK_COUNT}")).into());
+        }
         tracing::info!("Serving eth_feeHistory");
         Ok(self.eth_client.eth_provider().fee_history(block_count, newest_block, reward_percentiles).await?)
     }
@@ -251,7 +251,9 @@ where
             use alloy_provider::{Provider as _, ProviderBuilder};
             use url::Url;
 
-            let provider = ProviderBuilder::new().on_http(Url::parse(MAIN_RPC_URL.as_ref()).unwrap());
+            let url = Url::parse(MAIN_RPC_URL.as_ref())
+                .map_err(|e| EthApiError::Custom(format!("Invalid RPC URL: {}", e)))?;
+            let provider = ProviderBuilder::new().on_http(url);
             let tx_hash = provider
                 .send_raw_transaction(&bytes)
                 .await
