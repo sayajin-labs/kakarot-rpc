@@ -70,6 +70,12 @@
 
 ---
 
+## Update
+
+The development of `kakarot-rpc` is halted for now. This repository - an
+Ethereum RPC gateway to Starknet EVM - is frozen, mainly to halt creation of new
+issues and pull requests. It is MIT licensed, not audited.
+
 ## About
 
 Kakarot RPC fits in the three-part architecture of the Kakarot zkEVM rollup

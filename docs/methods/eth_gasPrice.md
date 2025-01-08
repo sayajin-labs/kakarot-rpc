@@ -11,12 +11,12 @@
 
 Returns the current price per gas in wei.
 
-Kakarot specificity: since Kakarot does not have a fee market as of January
-2024, transactions are ordered on a "First Come First Serve" basis.
+Kakarot specificity: since Kakarot does not have a fee market as of January 2024,
+transactions are ordered on a "First Come First Serve" basis.
 
 For this reason:
 
 - gasPrice == baseFee
 - priority fee is generally a variable that isn't used.
-  - setting a EIP-1559 transaction with `maxPriorityFeePerGas > 0` has no
+  - setting an EIP-1559 transaction with `maxPriorityFeePerGas > 0` has no
     effect.
